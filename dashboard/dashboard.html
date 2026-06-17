@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Spam Detector Dashboard</title>
+  <link rel="stylesheet" href="dashboard.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Spam Detector — Dashboard</h1>
+      <div style="margin-top:8px;">
+        <button id="scanBtn">Scan my mail</button>
+        <span id="scanStatus" style="margin-left:12px;color:#555"></span>
+      </div>
+    </header>
+
+    <section class="cards">
+      <div class="card" id="card-total">Total Scans<br><span class="value">—</span></div>
+      <div class="card" id="card-spam">Spam Count<br><span class="value">—</span></div>
+      <div class="card" id="card-safe">Safe Count<br><span class="value">—</span></div>
+      <div class="card" id="card-malicious">Malicious<br><span class="value">—</span></div>
+    </section>
+
+    <section class="charts">
+      <div class="chart-card">
+        <h3>Classification Distribution</h3>
+        <canvas id="pieChart"></canvas>
+      </div>
+
+      <div class="chart-card">
+        <h3>Spam Trend (daily)</h3>
+        <canvas id="lineChart"></canvas>
+      </div>
+
+      <div class="chart-card">
+        <h3>Top Spam Senders</h3>
+        <table id="sendersTable" class="table">
+          <thead><tr><th>Sender</th><th>Total</th><th>Spam</th><th>Reputation</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="chart-card">
+        <h3>Top Triggering Keywords</h3>
+        <canvas id="keywordsChart"></canvas>
+      </div>
+
+    </section>
+
+    <section class="details">
+      <div class="panel">
+        <h3>Blacklist / Whitelist</h3>
+        <div class="lists">
+          <div>
+            <h4>Blacklist</h4>
+            <pre id="blacklist">(none)</pre>
+          </div>
+          <div>
+            <h4>Whitelist</h4>
+            <pre id="whitelist">(none)</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" style="min-height: 120px;">
+        <h3>Recent Scan Logs</h3>
+        <p id="noScansInfo" style="color: #777; margin-top: 8px;">No scan records found.</p>
+        <div style="margin-top:8px;">
+          <a id="downloadLink" href="#" style="display:none">Download latest scan</a>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>Threat Breakdown</h3>
+        <canvas id="threatChart"></canvas>
+      </div>
+    </section>
+
+    <footer>
+      <small>Static dashboard — run a local server to view CSV data.</small>
+    </footer>
+  </div>
+
+<script>
+async function fetchText(path) {
+  try {
+    const r = await fetch(path);
+    if (!r.ok) throw new Error('Not found');
+    return await r.text();
+  } catch (e) { return null; }
+}
+
+function parseCSV(text) {
+  const lines = text.trim().split('\n').filter(Boolean);
+  if (lines.length <= 1) return [];
+  const headers = lines[0].split(',').map(h=>h.trim());
+  return lines.slice(1).map(l=>{
+    const cols = l.split(',');
+    const obj = {};
+    headers.forEach((h,i)=> obj[h]=cols[i] ? cols[i].trim() : '');
+    return obj;
+  });
+}
+
+function topN(arr, n) { return arr.slice(0,n); }
+
+async function buildDashboard() {
+  // Load files
+  const senderCSV = await fetchText('/spam_detector/sender_stats.csv');
+  const keywordCSV = await fetchText('/spam_detector/keyword_stats.csv');
+  const historyCSV = await fetchText('/spam_detector/history.csv');
+  const blacklistTxt = await fetchText('/spam_detector/blacklist.txt') || '(none)';
+  const whitelistTxt = await fetchText('/spam_detector/whitelist.txt') || '(none)';
+  const logsTxt = await fetchText('/automation/logs/spam_log.txt') || '(no logs)';
+
+  // Senders
+  const senders = senderCSV ? parseCSV(senderCSV) : [];
+  // Keywords
+  const keywords = keywordCSV ? parseCSV(keywordCSV) : [];
+  // History
+  const history = historyCSV ? parseCSV(historyCSV) : [];
+
+  // Summary cards
+  let total = 0, spam = 0, safe = 0, malicious = 0;
+  for (const row of history) { total += Number(row.total || 0); spam += Number(row.spam || 0); }
+  safe = total - spam;
+  document.querySelector('#card-total .value').textContent = total;
+  document.querySelector('#card-spam .value').textContent = spam;
+  document.querySelector('#card-safe .value').textContent = safe;
+  // malicious count from senders with low reputation
+  let malCount = senders.filter(s=>Number(s.reputation) < 30).length;
+  document.querySelector('#card-malicious .value').textContent = malCount;
+
+  // Pie chart: classification distribution from recent logs
+  const classCounts = {};
+  if (logsTxt && logsTxt !== '(no logs)') {
+    const logLines = logsTxt.trim().split('\n').slice(-200);
+    for (const ln of logLines) {
+      const m = ln.match(/CLASSIFICATION=([^|\n]+)/);
+      if (m) {
+        const c = m[1].trim(); classCounts[c] = (classCounts[c]||0)+1;
+      }
+    }
+  }
+  const pieLabels = Object.keys(classCounts);
+  const pieData = pieLabels.map(l=>classCounts[l]);
+  new Chart(document.getElementById('pieChart'), { type: 'pie', data: { labels: pieLabels, datasets:[{ data: pieData, backgroundColor: ['#6366F1','#06B6D4','#F59E0B','#EF4444','#10B981'] }] } });
+
+  // Line chart: history
+  const dates = history.map(r=>r.date);
+  const spamvals = history.map(r=>Number(r.spam||0));
+  new Chart(document.getElementById('lineChart'), { type: 'line', data: { labels: dates, datasets:[{ label:'Spam', data: spamvals, borderColor:'#EF4444', backgroundColor:'rgba(239,68,68,0.08)', fill:true }] }, options: { responsive:true } });
+
+  // Top senders table
+  const tbody = document.querySelector('#sendersTable tbody');
+  tbody.innerHTML = '';
+  if (senders.length) {
+    senders.sort((a,b)=>Number(b.total)-Number(a.total));
+    for (const s of topN(senders,20)) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${s.sender}</td><td>${s.total}</td><td>${s.spam}</td><td>${s.reputation}</td>`;
+      tbody.appendChild(tr);
+    }
+  }
+
+  // Keywords chart
+  if (keywords.length) {
+    keywords.sort((a,b)=>Number(b.hits)-Number(a.hits));
+    const top = topN(keywords,10);
+    new Chart(document.getElementById('keywordsChart'), { type:'bar', data: { labels: top.map(k=>k.keyword), datasets:[{ label:'Hits', data: top.map(k=>Number(k.hits)), backgroundColor:'#06B6D4' }] } });
+  }
+
+  // Blacklist / whitelist
+  document.getElementById('blacklist').textContent = blacklistTxt.trim();
+  document.getElementById('whitelist').textContent = whitelistTxt.trim();
+
+  // Threat breakdown: simple counts from logs
+  const threatCounts = { SPAM:0, PHISHING:0, MALICIOUS:0, PROMOTIONAL:0, SAFE:0 };
+  if (logsTxt && logsTxt !== '(no logs)') {
+    const logLines = logsTxt.trim().split('\n').slice(-500);
+    for (const ln of logLines) {
+      const m = ln.match(/CLASSIFICATION=([^|\n]+)/);
+      if (m) {
+        const c = m[1].trim(); threatCounts[c] = (threatCounts[c]||0)+1;
+      }
+    }
+  }
+  new Chart(document.getElementById('threatChart'), { type:'doughnut', data:{ labels:Object.keys(threatCounts), datasets:[{ data:Object.values(threatCounts), backgroundColor:['#10B981','#6366F1','#EF4444','#F59E0B','#06B6D4'] }] } });
+
+  // Load latest scan from endpoint
+  const dl = document.getElementById('downloadLink');
+  const noScans = document.getElementById('noScansInfo');
+  try {
+    const lsResponse = await fetch('/latest_scan');
+    if (lsResponse.ok) {
+      const lsData = await lsResponse.json();
+      if (lsData && lsData.download) {
+        dl.href = lsData.download;
+        dl.style.display = 'inline-block';
+        noScans.style.display = 'none';
+      } else {
+        dl.style.display = 'none';
+        noScans.style.display = 'block';
+      }
+    }
+  } catch (e) {
+    dl.style.display = 'none';
+    noScans.style.display = 'block';
+  }
+}
+
+buildDashboard();
+
+// Scan action
+document.getElementById('scanBtn').addEventListener('click', async function(){
+  const status = document.getElementById('scanStatus');
+  const dl = document.getElementById('downloadLink');
+  const noScans = document.getElementById('noScansInfo');
+  status.textContent = 'Scanning...';
+  dl.style.display = 'none';
+  noScans.style.display = 'block';
+  try{
+    const r = await fetch('/scan', { method: 'POST' });
+    const j = await r.json();
+    status.textContent = 'Scan complete';
+
+    if (j.download) {
+      dl.href = j.download;
+      dl.style.display = 'inline-block';
+      noScans.style.display = 'none';
+    }
+
+    // Refresh dashboard data (reload files/charts)
+    buildDashboard();
+  } catch (e) {
+    status.textContent = 'Scan failed: ' + e;
+  }
+});
+</script>
+</body>
+</html>

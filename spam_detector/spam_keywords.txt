@@ -1,0 +1,257 @@
+# Format: keyword,weight
+free,20
+winner,25
+urgent,15
+click,15
+offer,20
+money,20
+prize,25
+lottery,30
+limited,10
+buy now,20
+claim,15
+bonus,15
+cash,20
+earn,20
+earn money,25
+income,20
+double your,25
+make money,25
+save money,15
+cheap,15
+credit card,20
+mortgage,20
+loan,20
+refinance,15
+debt,20
+bankruptcy,20
+investment,20
+stock,15
+bitcoin,25
+crypto,25
+financial freedom,25
+no fees,15
+hidden charges,20
+billion dollars,25
+million dollars,25
+wealth,15
+rich,15
+profits,20
+guaranteed returns,30
+extra cash,20
+act now,20
+apply now,20
+call now,20
+clearance,15
+limited time,20
+expire,15
+expiry,15
+get started,10
+immediate,15
+instant,15
+asap,20
+today only,20
+one time,15
+last chance,25
+final notice,30
+don't hesitate,20
+don't delay,20
+take action,15
+ends soon,15
+running out,15
+hurry,20
+gift,20
+voucher,25
+coupon,20
+discount,15
+bargain,15
+promo,15
+special offer,20
+exclusive deal,20
+jackpot,30
+draw,20
+selected,20
+congratulations,25
+you won,30
+lucky,20
+sweepstakes,25
+award,25
+reward,20
+complimentary,20
+giveaway,20
+gift card,25
+100% free,25
+no cost,20
+save,10
+sales,10
+best price,15
+lowest price,15
+satisfaction guaranteed,15
+verify account,25
+security alert,20
+update info,20
+reset password,15
+unauthorized login,20
+suspended account,25
+locked out,25
+confirm details,20
+bank alert,20
+official notification,15
+billing issue,15
+payment pending,20
+invoice overdue,20
+action required,20
+attention,15
+important message,15
+critical update,20
+resolve issue,15
+unsubscribe,15
+opt out,15
+click here,20
+unsolicited,20
+marketing,10
+newsletter,5
+bulletin,5
+advertisement,15
+ad,10
+sponsored,10
+click below,20
+visit link,20
+open attachment,25
+download file,20
+remove me,20
+not spam,15
+bulk email,15
+weight loss,20
+miracle cure,25
+diet pill,20
+anti-aging,20
+viagra,35
+cialis,35
+pharmacy online,30
+cheap drugs,30
+doctor certified,15
+hair growth,20
+natural remedy,15
+replica watch,25
+rolex,25
+casino,30
+slots,30
+betting,25
+gambling,25
+poker,25
+adult,20
+meet singles,20
+dating,15
+hot girls,25
+work from home,20
+home based business,20
+be your own boss,25
+no experience needed,20
+flexible hours,15
+part-time job,15
+earn daily,25
+passive income,20
+job offer,15
+hiring now,15
+recruiting,10
+$$$,25
+100% satisfied,15
+valium,30
+xanax,30
+prozac,30
+enhancement,20
+performance,15
+enlarge,25
+secret,15
+insane deal,20
+risk free,20
+no risk,20
+trial,10
+test drive,10
+unlimited access,15
+cancel anytime,15
+no obligation,15
+winner selected,30
+claim prize,30
+lottery jackpot,35
+mega millions,30
+powerball,30
+lucky draw,25
+cash payout,25
+bank wire,25
+western union,25
+moneygram,25
+gift voucher,20
+free trial,20
+free access,20
+free download,20
+full refund,20
+moneyback,20
+no credit check,20
+pre-approved,20
+interest rate,15
+low apr,20
+consolidate debt,25
+credit repair,25
+foreclosure,20
+tax refund,25
+irs notice,25
+revenue service,25
+government grant,25
+funding,15
+invest,15
+stocks to buy,20
+pennystock,25
+hot stock,25
+trade alert,20
+market update,10
+insider info,20
+profit daily,25
+get rich quick,30
+financial security,15
+retire early,20
+dream life,20
+luxury living,20
+exclusive club,15
+vip access,20
+high paying,15
+sign up bonus,20
+join free,15
+register now,15
+don't miss,15
+act fast,20
+deal ends,15
+closing soon,15
+limited stock,15
+while supplies last,15
+immediate response,15
+reply immediately,20
+time sensitive,20
+confidential,15
+top secret,20
+strictly private,20
+read this,15
+please read,10
+attention needed,15
+system administrator,20
+webmaster,15
+helpdesk,15
+support ticket,15
+unusual activity,20
+security breach,25
+password compromised,25
+identity theft,25
+protect yourself,15
+insurance quote,15
+cheap rates,15
+save big,15
+unbelievable,15
+amazing,10
+out of this world,15
+guarantee,15
+certified,10
+proven results,15
+tested,10
+trusted,10
+official partner,10

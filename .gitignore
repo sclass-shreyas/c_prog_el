@@ -1,0 +1,8 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+scans/scan_*
+/dashboard/__pycache__/
+/spam_detector/__pycache__/
+/automation/__pycache__/
