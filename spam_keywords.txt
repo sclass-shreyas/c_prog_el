@@ -1,0 +1,13 @@
+# Format: keyword,weight
+free,20
+winner,25
+urgent,15
+click,15
+offer,20
+money,20
+prize,25
+lottery,30
+limited,10
+buy now,20
+claim,15
+bonus,15
